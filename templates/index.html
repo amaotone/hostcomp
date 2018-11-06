@@ -1,25 +1,41 @@
+<!DOCTYPE html>
 <html>
     <head>
         <title>{{ title }}</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <h1>{{ title }}</h1>
-        <table>
-            <tr>
-                <th>#</th>
-                <th>name</th>
-                <th>public</th>
-                <th>private</th>
-            </tr>
-            {% for user in scores %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ user.name }}</td>
-                <td>{{ user.public }}</td>
-                <td>{% if private %}{{ user.private }}{% else %}--{% endif %}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <section class="hero is-light">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">Hostcomp</h1>
+                    <h2 class="subtitle">{{ title }}</h2>
+                </div>
+            </div>
+        </section>
+        <div class="container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Public</th>
+                        <th>Private</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in scores %}
+                        <tr>
+                            <th>{{ loop.index }}</th>
+                            <td>{{ user.name }}</td>
+                            <td>{{ '{:.3f}'.format(user.public) }}</td>
+                        <td>{% if private %}{{ '{:.3f}'.format(user.private) }}{% else %}--{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </body>
 </html>
 

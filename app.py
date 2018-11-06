@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sklearn import metrics
 
 app = Flask(__name__)
-db_uri = os.environ.get('DATABASE_URL') or 'postgresql://localhost/hostcomp'
+db_uri = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(app.root_path, 'hostcomp.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 db = SQLAlchemy(app)
 
