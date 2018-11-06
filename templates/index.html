@@ -1,0 +1,21 @@
+<html>
+<body>
+    <table>
+        <tr>
+            <th>#</th>
+            <th>name</th>
+            <th>public</th>
+            <th>private</th>
+        </tr>
+        {% for user in scores %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.public }}</td>
+            <td>{% if private %}{{ user.private }}{% else %}--{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+
