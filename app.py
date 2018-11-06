@@ -27,14 +27,14 @@ class Score(db.Model):
 def index():
     scores = Score.query.all()
     scores = sorted(scores, key=lambda x: x.public)
-    return render_template('index.html', scores=scores, private=False)
+    return render_template('index.html', scores=scores, title='public LB', private=False)
 
 
 @app.route('/private')
 def private():
     scores = Score.query.all()
     scores = sorted(scores, key=lambda x: x.private)
-    return render_template('index.html', scores=scores, private=True)
+    return render_template('index.html', scores=scores, title='private LB', private=True)
 
 
 @app.route('/submit', methods=['POST'])
@@ -70,7 +70,7 @@ def download_dataset():
     if testdata is None:
         app.logger.info('download test data')
         testdata_url = os.environ.get('TESTDATA_URL')
-        os.system(f'wget -O /tmp/test.csv {testdata_url}')
+        os.system(f'wget -q -O /tmp/test.csv {testdata_url}')
         testdata = pd.read_csv('/tmp/test.csv')
 
 
