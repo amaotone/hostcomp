@@ -5,7 +5,7 @@ import sqlite3
 import pandas as pd
 from flask import Flask, g, jsonify, make_response, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-from sklearn import metrics
+from sklearn.metrics import mean_absolute_error
 
 app = Flask(__name__)
 db_uri = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(app.root_path, 'hostcomp.db')
@@ -13,7 +13,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 db = SQLAlchemy(app)
 
 testdata = None
-scoring_func = metrics.mean_absolute_error
 
 
 class Score(db.Model):
@@ -51,10 +50,8 @@ def submit():
         return jsonify({'error': f'Invalid pred length: {len(pred)}. len(pred) must be {len(testdata)}'})
 
     testdata['pred'] = pred
-    public = testdata.query("not private")
-    public_score = scoring_func(public['target'], public['pred'])
-    private = testdata.query("private")
-    private_score = scoring_func(private['target'], private['pred'])
+    public_score = mean_absolute_error(testdata['target'], testdata['pred'], (testdata['private'] == 0).astype(float))
+    private_score = mean_absolute_error(testdata['target'], testdata['pred'], (testdata['private'] == 1).astype(float))
 
     score = Score()
     score.name = name
