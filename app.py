@@ -26,14 +26,14 @@ class Score(db.Model):
 def index():
     scores = Score.query.all()
     scores = sorted(scores, key=lambda x: x.public)
-    return render_template('index.html', scores=scores, title='public LB', private=False)
+    return render_template('index.html', scores=scores, title='public leaderboard', private=False)
 
 
 @app.route('/private')
 def private():
     scores = Score.query.all()
     scores = sorted(scores, key=lambda x: x.private)
-    return render_template('index.html', scores=scores, title='private LB', private=True)
+    return render_template('index.html', scores=scores, title='private leaderboard', private=True)
 
 
 @app.route('/submit', methods=['POST'])
@@ -43,6 +43,9 @@ def submit():
         app.logger.info(request.headers['Content-Type'])
         return jsonify({'error': f'Invalid Content-Type: {request.headers["Content-Type"]}'})
     data = request.json
+
+    if 'name' not in data:
+        return jsonnify({'error': 'You must specify the name.'})
     name = data['name']
     pred = list(map(float, data['pred']))
 
@@ -60,6 +63,25 @@ def submit():
     db.session.merge(score)
     db.session.commit()
     return jsonify({'name': name, 'public_score': public_score})
+
+
+@app.route('/delete', methods=['POST'])
+def delete():
+    if request.headers['Content-Type'] != 'application/json':
+        app.logger.info(request.headers['Content-Type'])
+        return jsonify({'error': f'Invalid Content-Type: {request.headers["Content-Type"]}'})
+    data = request.json
+
+    if 'name' not in data:
+        return jsonify({'error': 'You must specify the name.'})
+    name = data['name']
+
+    score = Score.query.filter_by(name=name).first()
+    if not score:
+        return jsonify({'error': f"Doesn't exist: {name}"})
+    db.session.delete(score)
+    db.session.commit()
+    return jsonify({'message': f"Successfully deleted: {name}"})
 
 
 def download_dataset():
