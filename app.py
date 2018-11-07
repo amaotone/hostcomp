@@ -43,17 +43,24 @@ def private():
 def submit():
     download_dataset()
     if request.headers['Content-Type'] != 'application/json':
-        app.logger.info(request.headers['Content-Type'])
-        return jsonify({'error': f'Invalid Content-Type: {request.headers["Content-Type"]}'})
+        resp = jsonify({'message': f"Invalid Content-Type: {request.headers['Content-Type']}"})
+        resp.status_code = 400
+        return resp
+
     data = request.json
 
     if 'name' not in data:
-        return jsonnify({'error': 'You must specify the name.'})
+        resp = jsonify({'message': 'You must specify the name.'})
+        resp.status_code = 400
+        return resp
+
     name = data['name']
     pred = list(map(float, data['pred']))
 
     if len(pred) != len(testdata):
-        return jsonify({'error': f'Invalid pred length: {len(pred)}. len(pred) must be {len(testdata)}'})
+        resp = jsonify({'message': f"Invalid prediction size. len(pred) must be {len(testdata)}, but len(pred) = {len(pred)}."})
+        resp.status_code = 422
+        return resp
 
     testdata['pred'] = pred
     public_score = mean_absolute_error(testdata['target'], testdata['pred'], (testdata['private'] == 0).astype(float))
@@ -65,26 +72,40 @@ def submit():
     score.private = private_score
     db.session.merge(score)
     db.session.commit()
-    return jsonify({'name': name, 'public_score': public_score})
+
+    resp = jsonify({'name': name, 'public_score': public_score})
+    resp.status_code = 200
+    return resp
 
 
 @app.route('/delete', methods=['POST'])
 def delete():
     if request.headers['Content-Type'] != 'application/json':
-        app.logger.info(request.headers['Content-Type'])
-        return jsonify({'error': f'Invalid Content-Type: {request.headers["Content-Type"]}'})
+        resp = jsonify({'message': f"Invalid Content-Type: {request.headers['Content-Type']}"})
+        resp.status_code = 400
+        return resp
+
     data = request.json
 
     if 'name' not in data:
-        return jsonify({'error': 'You must specify the name.'})
-    name = data['name']
+        resp = jsonify({'message': 'You must specify the name.'})
+        resp.status_code = 400
+        return resp
 
+    name = data['name']
     score = Score.query.filter_by(name=name).first()
+
     if not score:
-        return jsonify({'error': f"Doesn't exist: {name}"})
+        resp = jsonify({'message': f"Requested name doesn't exist: {name}"})
+        resp.status_code = 404
+        return resp
+
     db.session.delete(score)
     db.session.commit()
-    return jsonify({'message': f"Successfully deleted: {name}"})
+
+    resp = jsonify({'message': f"successfully deleted: {name}"})
+    resp.status_code = 200
+    return resp
 
 
 def download_dataset():
