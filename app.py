@@ -13,6 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 db = SQLAlchemy(app)
 
 testdata = None
+competition_name = os.environ.get('COMPETITION_NAME', 'Hostcomp')
 
 
 class Score(db.Model):
@@ -26,14 +27,16 @@ class Score(db.Model):
 def index():
     scores = Score.query.all()
     scores = sorted(scores, key=lambda x: x.public)
-    return render_template('index.html', scores=scores, title='public leaderboard', private=False)
+    return render_template('index.html', scores=scores, competition_name=competition_name,
+                           title='public leaderboard', private=False)
 
 
 @app.route('/private')
 def private():
     scores = Score.query.all()
     scores = sorted(scores, key=lambda x: x.private)
-    return render_template('index.html', scores=scores, title='private leaderboard', private=True)
+    return render_template('index.html', scores=scores, competition_name=competition_name,
+                           title='private leaderboard', private=True)
 
 
 @app.route('/submit', methods=['POST'])

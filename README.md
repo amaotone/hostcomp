@@ -16,6 +16,7 @@ $ cd hostcomp
 ```bash
 $ heroku create <your-app-name>
 $ heroku config:set TESTDATA_URL=<your-testdata-url>
+$ heroku config:set COMPETITION_NAME=<your-competition-name>
 $ heroku addons:create heroku-postgresql:hobby-dev
 $ git push heroku master
 ```
