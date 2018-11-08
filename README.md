@@ -2,6 +2,11 @@
 
 Let's host a minimal data analysis competition.
 
+## Features
+
+- Automatic Scoring
+- Public/Private Leaderboard
+
 ## Getting Started
 
 1. Clone this repository.
