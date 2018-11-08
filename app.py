@@ -10,6 +10,7 @@ from sklearn.metrics import mean_absolute_error
 app = Flask(__name__)
 db_uri = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(app.root_path, 'hostcomp.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 testdata = None
@@ -103,7 +104,7 @@ def delete():
     db.session.delete(score)
     db.session.commit()
 
-    resp = jsonify({'message': f"successfully deleted: {name}"})
+    resp = jsonify({'message': f"Successfully deleted: {name}"})
     resp.status_code = 200
     return resp
 
