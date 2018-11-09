@@ -36,7 +36,7 @@ class Competition(db.Model):
 def index():
     compe = Competition.query.first()
     scores = get_scores(private=False)
-    return render_template('index.html', title='public leaderboard', scores=scores,
+    return render_template('leaderboard.html', title='public leaderboard', scores=scores,
                            compe=compe, private=False)
 
 
@@ -47,7 +47,7 @@ def private():
         return redirect(url_for('login'))
 
     scores = get_scores(private=True)
-    return render_template('index.html', title='private leaderboard', scores=scores,
+    return render_template('leaderboard.html', title='private leaderboard', scores=scores,
                            compe=compe, private=True)
 
 
