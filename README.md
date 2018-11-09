@@ -2,7 +2,14 @@
 
 Let's host a minimal data analysis competition.
 
+## Features
+
+- Automatic Scoring
+- Public/Private Leaderboard
+
 ## Getting Started
+
+0. [Create Heroku account](https://signup.heroku.com/) and [install Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
 
 1. Clone this repository.
 
