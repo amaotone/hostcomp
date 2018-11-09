@@ -2,28 +2,26 @@
 {% block title %}{{title}} - {{competition_name}}{% endblock %}
 {% block body %}
   <div class="container">
-    <section class="section">
-      <table class="table">
-        <thead>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Public</th>
+          <th>Private</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in scores %}
           <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Public</th>
-            <th>Private</th>
+            <th>{{ loop.index }}</th>
+            <td>{{ user.name }}</td>
+            <td>{{ '{:.3f}'.format(user.public) }}</td>
+          <td>{% if private %}{{ '{:.3f}'.format(user.private) }}{% else %}--{% endif %}</td>
           </tr>
-        </thead>
-        <tbody>
-          {% for user in scores %}
-            <tr>
-              <th>{{ loop.index }}</th>
-              <td>{{ user.name }}</td>
-              <td>{{ '{:.3f}'.format(user.public) }}</td>
-            <td>{% if private %}{{ '{:.3f}'.format(user.private) }}{% else %}--{% endif %}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </section>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 {% endblock %}
 
