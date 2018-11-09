@@ -6,6 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
+    <nav class="navbar">
+      <div class="navbar-brand"><a class="navbar-item" href="{{ url_for('index') }}">{{ compe.name }}</a>
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="pagetopNav">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="pagetopNav" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="{{ url_for('index') }}">Home</a>
+        <a class="navbar-item" href="{{ url_for('private') }}">Private</a>
+        <a class="navbar-item" href="{{ url_for('submit') }}">Submit</a>
+      </div>
+    </div>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="buttons">
+          {% if session['logged_in'] %}
+            <a class="button is-light" href="{{ url_for('logout') }}">Logout</a>
+          {% else %}
+            <a class="button is-light" href="{{ url_for('login') }}">Login</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    </nav>
     <section class="hero is-light">
       <div class="hero-body">
         <div class="container">

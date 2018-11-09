@@ -64,6 +64,7 @@ def get_scores(private=False):
 def login():
     if session.get('logged_in'):
         return redirect(url_for('admin'))
+
     error = None
     if request.method == 'POST':
         if request.form['password'] != app.config['ADMIN_PASSWORD']:
@@ -71,12 +72,22 @@ def login():
         else:
             session['logged_in'] = True
             return redirect(url_for('admin'))
+
     compe = Competition.query.first()
     return render_template('login.html', title='Login', compe=compe, error=error)
 
 
+@app.route('/logout', methods=['GET'])
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('index'))
+
+
 @app.route('/admin')
 def admin():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
     compe = Competition.query.first()
     return render_template('admin.html', title='Admin', compe=compe)
 
