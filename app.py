@@ -42,8 +42,10 @@ def index():
 
 @app.route('/private')
 def private():
-    # TODO: login check
     compe = Competition.query.first()
+    if not session.get('logged_in') and not compe.disclose_private:
+        return redirect(url_for('login'))
+
     scores = get_scores(private=True)
     return render_template('index.html', title='private leaderboard', scores=scores,
                            compe=compe, private=True)
@@ -69,7 +71,8 @@ def login():
         else:
             session['logged_in'] = True
             return redirect(url_for('admin'))
-    return render_template('login.html', title='Login', error=error)
+    compe = Competition.query.first()
+    return render_template('login.html', title='Login', compe=compe, error=error)
 
 
 @app.route('/admin')
