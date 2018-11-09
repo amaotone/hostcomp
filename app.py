@@ -3,7 +3,7 @@ import os
 import sqlite3
 
 import pandas as pd
-from flask import Flask, g, jsonify, make_response, redirect, render_template, request, session, url_for
+from flask import Flask, flash, g, jsonify, make_response, redirect, render_template, request, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sklearn.metrics import mean_absolute_error
 
@@ -16,8 +16,6 @@ app.config['ADMIN_PASSWORD'] = os.environ.get('ADMIN_PASSWORD', 'admin')
 db = SQLAlchemy(app)
 
 testdata = None
-competition_name = os.environ.get('COMPETITION_NAME', 'Hostcomp')
-app.jinja_env.globals['competition_name'] = competition_name
 
 
 class Score(db.Model):
@@ -27,12 +25,37 @@ class Score(db.Model):
     private = db.Column(db.Float, nullable=False)
 
 
+class Competition(db.Model):
+    __tablename__ = 'competitions'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+    disclose_private = db.Column(db.Boolean, nullable=False)
+
+
 @app.route('/')
 def index():
+    compe = Competition.query.first()
+    scores = get_scores(private=False)
+    return render_template('index.html', title='public leaderboard', scores=scores,
+                           compe=compe, private=False)
+
+
+@app.route('/private')
+def private():
+    # TODO: login check
+    compe = Competition.query.first()
+    scores = get_scores(private=True)
+    return render_template('index.html', title='private leaderboard', scores=scores,
+                           compe=compe, private=True)
+
+
+def get_scores(private=False):
     scores = Score.query.all()
-    scores = sorted(scores, key=lambda x: x.public)
-    return render_template('index.html', scores=scores,
-                           title='public leaderboard', private=False)
+    if private:
+        scores = sorted(scores, key=lambda x: x.private)
+    else:
+        scores = sorted(scores, key=lambda x: x.public)
+    return scores
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -42,7 +65,7 @@ def login():
     error = None
     if request.method == 'POST':
         if request.form['password'] != app.config['ADMIN_PASSWORD']:
-            error = 'Invalid Password'
+            error = 'Incorrect Password'
         else:
             session['logged_in'] = True
             return redirect(url_for('admin'))
@@ -51,16 +74,22 @@ def login():
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    compe = Competition.query.first()
+    return render_template('admin.html', title='Admin', compe=compe)
 
 
-@app.route('/private')
-def private():
-    # TODO: login check
-    scores = Score.query.all()
-    scores = sorted(scores, key=lambda x: x.private)
-    return render_template('index.html', scores=scores,
-                           title='private leaderboard', private=True)
+@app.route('/admin/config', methods=['POST'])
+def update_config():
+    if not session.get('logged_in', False):
+        return redirect(url_for('login'))
+
+    compe = Competition.query.first()
+    compe.name = request.form['name']
+    compe.disclose_private = request.form['disclose_private'] == 'true'
+    db.session.add(compe)
+    db.session.commit()
+    flash('Successfully Updated')
+    return redirect(url_for('admin'))
 
 
 @app.route('/submit', methods=['POST'])
@@ -139,6 +168,13 @@ def download_dataset():
         testdata_url = os.environ.get('TESTDATA_URL')
         os.system(f'wget -q -O /tmp/test.csv {testdata_url}')
         testdata = pd.read_csv('/tmp/test.csv')
+
+
+def init_competition():
+    if db.session.query(Competition).count() == 0:
+        default = Competition(name='Competition', disclose_private=False, )
+        db.session.add(default)
+        db.session.commit()
 
 
 if __name__ == '__main__':
