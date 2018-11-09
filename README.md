@@ -25,10 +25,11 @@ $ git push heroku master
 
 ```bash
 $ heroku run python
->>> from app import db
+>>> from app import db, init_competition
 >>> db.create_all()
+>>> init_competition()
 ```
 
 ## Author
 
-Amane Suzuki
+Amane Suzuki <amane.suzu@gmail.com>
