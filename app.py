@@ -3,18 +3,21 @@ import os
 import sqlite3
 
 import pandas as pd
-from flask import Flask, g, jsonify, make_response, render_template, request
+from flask import Flask, g, jsonify, make_response, redirect, render_template, request, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sklearn.metrics import mean_absolute_error
 
 app = Flask(__name__)
+app.secret_key = 'hostcompsecret'
 db_uri = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(app.root_path, 'hostcomp.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['ADMIN_PASSWORD'] = os.environ.get('ADMIN_PASSWORD', 'admin')
 db = SQLAlchemy(app)
 
 testdata = None
 competition_name = os.environ.get('COMPETITION_NAME', 'Hostcomp')
+app.jinja_env.globals['competition_name'] = competition_name
 
 
 class Score(db.Model):
@@ -28,15 +31,35 @@ class Score(db.Model):
 def index():
     scores = Score.query.all()
     scores = sorted(scores, key=lambda x: x.public)
-    return render_template('index.html', scores=scores, competition_name=competition_name,
+    return render_template('index.html', scores=scores,
                            title='public leaderboard', private=False)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if session.get('logged_in'):
+        return redirect(url_for('admin'))
+    error = None
+    if request.method == 'POST':
+        if request.form['password'] != app.config['ADMIN_PASSWORD']:
+            error = 'Invalid Password'
+        else:
+            session['logged_in'] = True
+            return redirect(url_for('admin'))
+    return render_template('login.html', title='Login', error=error)
+
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
 
 
 @app.route('/private')
 def private():
+    # TODO: login check
     scores = Score.query.all()
     scores = sorted(scores, key=lambda x: x.private)
-    return render_template('index.html', scores=scores, competition_name=competition_name,
+    return render_template('index.html', scores=scores,
                            title='private leaderboard', private=True)
 
 
