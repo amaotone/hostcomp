@@ -1,41 +1,29 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>{{title}} - {{ competition_name }}</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
-    <body>
-        <section class="hero is-light">
-            <div class="hero-body">
-                <div class="container">
-                    <h1 class="title">{{ competition_name }}</h1>
-                    <h2 class="subtitle">{{ title }}</h2>
-                </div>
-            </div>
-        </section>
-        <div class="container">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Public</th>
-                        <th>Private</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in scores %}
-                        <tr>
-                            <th>{{ loop.index }}</th>
-                            <td>{{ user.name }}</td>
-                            <td>{{ '{:.3f}'.format(user.public) }}</td>
-                        <td>{% if private %}{{ '{:.3f}'.format(user.private) }}{% else %}--{% endif %}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </body>
-</html>
+{% extends "layout.html" %}
+{% block title %}{{title}} - {{competition_name}}{% endblock %}
+{% block body %}
+  <div class="container">
+    <section class="section">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Public</th>
+            <th>Private</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in scores %}
+            <tr>
+              <th>{{ loop.index }}</th>
+              <td>{{ user.name }}</td>
+              <td>{{ '{:.3f}'.format(user.public) }}</td>
+            <td>{% if private %}{{ '{:.3f}'.format(user.private) }}{% else %}--{% endif %}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </div>
+{% endblock %}
 

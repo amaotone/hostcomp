@@ -1,0 +1,33 @@
+{% extends "min.html" %}
+{% block body %}
+<section class="hero is-light is-fullheight">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <div class="column is-4 is-offset-4">
+        <h3 class="title">{{ compe.name }}</h3>
+        <p class="subtitle">admin</p>
+        <div class="box">
+          {% if error %}
+          <div class="message is-danger is-small">
+            <div class="message-body">
+              {{ error }}
+            </div>
+          </div>
+          {% endif %}
+          <form action="{{url_for('login')}}" method="post">
+            <div class="field">
+              <p class="control has-icons-left">
+                <input class="input" type="password" name="password" placeholder='Password'>
+                <span class="icon is-small is-left">
+                  <i class="fas fa-lock"></i>
+                </span>
+              </p>
+            </div>
+            <button class="button is-block is-info is-fullwidth">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
