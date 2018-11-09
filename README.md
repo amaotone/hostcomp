@@ -9,26 +9,27 @@ Let's host a minimal data analysis competition.
 
 ## Getting Started
 
-0. [Create Heroku account](https://signup.heroku.com/) and [install Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
+1. [Create Heroku account](https://signup.heroku.com/) and [install Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli).
 
-1. Clone this repository.
+2. Clone this repository.
 
 ```bash
 $ git clone https://github.com/amaotone/hostcomp
 $ cd hostcomp
 ```
 
-2. Setup your heroku app.
+3. Setup your heroku app.
 
 ```bash
 $ heroku create <your-app-name>
 $ heroku config:set TESTDATA_URL=<your-testdata-url>
 $ heroku config:set COMPETITION_NAME=<your-competition-name>
+$ heroku config:set ADMIN_PASSWORD=<your-admin-password>
 $ heroku addons:create heroku-postgresql:hobby-dev
 $ git push heroku master
 ```
 
-3. Initialize your DB.
+4. Initialize your DB.
 
 ```bash
 $ heroku run python
@@ -36,6 +37,8 @@ $ heroku run python
 >>> db.create_all()
 >>> init_competition()
 ```
+
+5. Access your website and update config.
 
 ## Author
 
