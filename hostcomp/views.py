@@ -1,35 +1,9 @@
-import logging
 import os
-import sqlite3
 
 import pandas as pd
 from flask import Flask, flash, g, jsonify, make_response, redirect, render_template, request, session, url_for
-from flask_sqlalchemy import SQLAlchemy
-from sklearn.metrics import mean_absolute_error
-
-app = Flask(__name__)
-app.secret_key = 'hostcompsecret'
-db_uri = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(app.root_path, 'hostcomp.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['ADMIN_PASSWORD'] = os.environ.get('ADMIN_PASSWORD', 'admin')
-db = SQLAlchemy(app)
-
-testdata = None
-
-
-class Score(db.Model):
-    __tablename__ = 'scores'
-    name = db.Column(db.String(), primary_key=True)
-    public = db.Column(db.Float, nullable=False)
-    private = db.Column(db.Float, nullable=False)
-
-
-class Competition(db.Model):
-    __tablename__ = 'competitions'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(), nullable=False)
-    disclose_private = db.Column(db.Boolean, nullable=False)
+from hostcomp.models import Competition, Score
+from hostcomp import app
 
 
 @app.route('/')
@@ -189,7 +163,3 @@ def init_competition():
         default = Competition(name='Competition', disclose_private=False, )
         db.session.add(default)
         db.session.commit()
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5050)
