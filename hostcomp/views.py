@@ -2,8 +2,9 @@ import os
 
 import pandas as pd
 from flask import Flask, flash, g, jsonify, make_response, redirect, render_template, request, session, url_for
+
+from hostcomp import app, db
 from hostcomp.models import Competition, Score
-from hostcomp import app
 
 
 @app.route('/')
@@ -37,7 +38,7 @@ def get_scores(private=False):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if session.get('logged_in'):
-        return redirect(url_for('admin'))
+        return redirect(url_for('admin_general'))
 
     error = None
     if request.method == 'POST':
@@ -45,7 +46,7 @@ def login():
             error = 'Incorrect Password'
         else:
             session['logged_in'] = True
-            return redirect(url_for('admin'))
+            return redirect(url_for('admin_general'))
 
     compe = Competition.query.first()
     return render_template('login.html', title='Login', compe=compe, error=error)
@@ -57,13 +58,34 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/admin')
-def admin():
+@app.route('/admin/general', methods=['GET', 'POST'])
+def admin_general():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
 
     compe = Competition.query.first()
-    return render_template('admin.html', title='Admin', compe=compe)
+    if request.method == 'POST':
+        compe.name = request.form['name']
+        compe.disclose_private = request.form['disclose_private'] == 'true'
+        db.session.add(compe)
+        db.session.commit()
+        flash('Successfully Updated')
+    return render_template('admin_general.html', title='General Settings', compe=compe)
+
+
+@app.route('/admin/testdata', methods=['GET', 'POST'])
+def admin_testdata():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    compe = Competition.query.first()
+    if request.method == 'POST':
+        # TODO: upload and validation
+        # TODO: flash
+        pass
+
+    # TODO: change template
+    return render_template('admin_testdata.html', title='Upload Test Data', compe=compe)
 
 
 @app.route('/admin/config', methods=['POST'])

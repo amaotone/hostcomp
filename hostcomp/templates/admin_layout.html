@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+  <div class="container">
+    <div class="columns">
+      <div class="column is-3">
+        <aside class="menu">
+          <ul class="menu-list">
+            <li>
+              <a href="{{ url_for('admin_general') }}">General</a>
+              <a href="{{ url_for('admin_testdata') }}">Test data</a>
+            </li>
+          </ul>
+        </aside>
+      </div>
+      <div class="column is-9">
+        {% for message in get_flashed_messages() %}
+          <div class="message is-success">
+            <div class="message-body">{{ message }}</div>
+          </div>
+        {% endfor %}
+        {% block form %}{% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
