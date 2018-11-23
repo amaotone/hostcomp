@@ -81,6 +81,8 @@ def admin_testdata():
     compe = Competition.query.first()
     if request.method == 'POST':
         # TODO: upload and validation
+        df = pd.read_csv(request.files.get('testdata'))
+        flash(', '.join(df.columns))
         # TODO: flash
         pass
 

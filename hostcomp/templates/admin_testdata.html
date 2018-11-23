@@ -2,18 +2,35 @@
 {% block form %}
   <form action="{{ url_for('admin_testdata') }}" method="post" enctype="multipart/form-data" accept=".csv">
     <div class="field">
-      <div class="file">
-        <label class="file-label">
-          <input class="file-input" type="file" name="resume">
-          <span class="file-cta">
-            <span class="file-icon">
-              <i class="fas fa-upload"></i>
+      <label class="label">Test Data CSV</label>
+      <div class="control">
+        <div class="file">
+          <label class="file-label">
+            <input class="file-input" type="file" name="testdata">
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label">
+                Choose a CSV...
+              </span>
             </span>
-            <span class="file-label">
-              Choose a CSV...
-            </span>
-          </span>
-        </label>
+          </label>
+        </div>
+        <p class="help">Test data must have just three columns: <code>id</code>, <code>target</code> and <code>private</code>.</p>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="">Metrics</label>
+      <div class="control">
+        <div class="select">
+          <select name="metrics">
+            <option value="accuracy">Accuracy</option>
+            <option value="logloss">Logloss</option>
+            <option value="mean_squared_error">Mean Squared Error</option>
+            <option value="r2_score">R2</option>
+          </select>
+        </div>
       </div>
     </div>
     <div class="field is-grouped">
